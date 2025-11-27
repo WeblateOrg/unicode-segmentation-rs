@@ -1,0 +1,16 @@
+[package]
+name = "unicode-segmentation-rs"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "unicode_segmentation_rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.27.1", features = ["extension-module"] }
+unicode-segmentation = "1.12.0"
+unicode-width = "0.2.2"
+
+#[build-dependencies]
+#pyo3-build-config = "0.20"
