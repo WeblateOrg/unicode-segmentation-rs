@@ -30,44 +30,44 @@ maturin develop --release
 ## Usage
 
 ```python
-import unicode_segmentation_py as us
+import unicode_segmentation_rs
 
 # Grapheme clusters (user-perceived characters)
 text = "Hello 👨‍👩‍👧‍👦 World"
-clusters = us.graphemes(text, is_extended=True)
+clusters = unicode_segmentation_py.graphemes(text, is_extended=True)
 print(clusters)  # ['H', 'e', 'l', 'l', 'o', ' ', '👨‍👩‍👧‍👦', ' ', 'W', 'o', 'r', 'l', 'd']
 
 # Get grapheme clusters with their byte indices
-indices = us.grapheme_indices(text, is_extended=True)
+indices = unicode_segmentation_py.grapheme_indices(text, is_extended=True)
 print(indices)  # [(0, 'H'), (1, 'e'), ...]
 
 # Word boundaries (includes punctuation and whitespace)
 text = "Hello, world!"
-words = us.split_word_bounds(text)
+words = unicode_segmentation_py.split_word_bounds(text)
 print(words)  # ['Hello', ',', ' ', 'world', '!']
 
 # Unicode words (excludes punctuation and whitespace)
-words = us.unicode_words(text)
+words = unicode_segmentation_py.unicode_words(text)
 print(words)  # ['Hello', 'world']
 
 # Word indices
-indices = us.split_word_bound_indices(text)
+indices = unicode_segmentation_py.split_word_bound_indices(text)
 print(indices)  # [(0, 'Hello'), (5, ','), ...]
 
 # Sentence segmentation
 text = "Hello world. How are you? I'm fine."
-sentences = us.unicode_sentences(text)
+sentences = unicode_segmentation_py.unicode_sentences(text)
 print(sentences)  # ['Hello world. ', 'How are you? ', "I'm fine."]
 
 # Display width calculation
 text = "Hello 世界"
-width = us.text_width(text)
+width = unicode_segmentation_py.text_width(text)
 print(width)  # 10 (Hello=5, space=1, 世=2, 界=2, but depends on terminal)
 
 # Character width
-print(us.text_width('A'))    # Some(1)
-print(us.text_width('世'))   # Some(2)
-print(us.text_width('\t'))   # None (control character)
+print(unicode_segmentation_py.text_width('A'))    # Some(1)
+print(unicode_segmentation_py.text_width('世'))   # Some(2)
+print(unicode_segmentation_py.text_width('\t'))   # None (control character)
 ```
 
 ## Examples
@@ -75,18 +75,18 @@ print(us.text_width('\t'))   # None (control character)
 ### Grapheme Cluster Segmentation
 
 ```python
-import unicode_segmentation_py as us
+import unicode_segmentation_rs
 
 # Complex emojis and combining characters
 text = "Hello 👨‍👩‍👧‍👦 नमस्ते"
 print(f"Text: {text}")
-print(f"Graphemes: {us.graphemes(text, is_extended=True)}")
-print(f"Length (graphemes): {len(us.graphemes(text, is_extended=True))}")
+print(f"Graphemes: {unicode_segmentation_py.graphemes(text, is_extended=True)}")
+print(f"Length (graphemes): {len(unicode_segmentation_py.graphemes(text, is_extended=True))}")
 print(f"Length (chars): {len(text)}")
 
 # With indices
 print("Grapheme indices:")
-for idx, cluster in us.grapheme_indices(text, is_extended=True):
+for idx, cluster in unicode_segmentation_py.grapheme_indices(text, is_extended=True):
     print(f"  {idx:3d}: {cluster!r}")
 ```
 
@@ -95,12 +95,12 @@ for idx, cluster in us.grapheme_indices(text, is_extended=True):
 ```python
 text = "Hello, world! How are you?"
 print(f"Text: {text}")
-print(f"Word bounds: {us.split_word_bounds(text)}")
-print(f"Unicode words: {us.unicode_words(text)}")
+print(f"Word bounds: {unicode_segmentation_py.split_word_bounds(text)}")
+print(f"Unicode words: {unicode_segmentation_py.unicode_words(text)}")
 
 # With indices
 print("Word boundary indices:")
-for idx, word in us.split_word_bound_indices(text):
+for idx, word in unicode_segmentation_py.split_word_bound_indices(text):
     print(f"  {idx:3d}: {word!r}")
 ```
 
@@ -109,7 +109,7 @@ for idx, word in us.split_word_bound_indices(text):
 ```python
 text = "Hello world. How are you? I'm fine, thanks! What about you?"
 print(f"Text: {text}")
-sentences = us.unicode_sentences(text)
+sentences = unicode_segmentation_py.unicode_sentences(text)
 print("Sentences:")
 for i, sentence in enumerate(sentences, 1):
     print(f"  {i}. {sentence!r}")
@@ -121,17 +121,17 @@ for i, sentence in enumerate(sentences, 1):
 # Arabic
 arabic = "مرحبا بك. كيف حالك؟"
 print(f"Arabic: {arabic}")
-print(f"Sentences: {us.unicode_sentences(arabic)}")
+print(f"Sentences: {unicode_segmentation_py.unicode_sentences(arabic)}")
 
 # Japanese
 japanese = "こんにちは。お元気ですか？"
 print(f"Japanese: {japanese}")
-print(f"Sentences: {us.unicode_sentences(japanese)}")
+print(f"Sentences: {unicode_segmentation_py.unicode_sentences(japanese)}")
 
 # Mixed languages
 mixed = "Hello世界! This is a test文章."
 print(f"Mixed: {mixed}")
-print(f"Words: {us.unicode_words(mixed)}")
+print(f"Words: {unicode_segmentation_py.unicode_words(mixed)}")
 ```
 
 ### Display Width Calculation
@@ -147,15 +147,15 @@ examples = [
 ]
 
 for text in examples:
-    width = us.text_width(text)
-    width_cjk = us.text_width_cjk(text)
+    width = unicode_segmentation_py.text_width(text)
+    width_cjk = unicode_segmentation_py.text_width_cjk(text)
     print(f"Text: {text!r:20} Width: {width:2} CJK: {width_cjk:2} Chars: {len(text):2}")
 
 # Character widths
 chars = ['a', 'A', '1', ' ', '世', '界', 'あ', '🎉', '\t', '\n']
 for c in chars:
-    w = us.text_width(c)
-    w_cjk = us.text_width_cjk(c)
+    w = unicode_segmentation_py.text_width(c)
+    w_cjk = unicode_segmentation_py.text_width_cjk(c)
     w_str = str(w) if w is not None else "None"
     w_cjk_str = str(w_cjk) if w_cjk is not None else "None"
     print(f"  {c!r:6} width: {w_str:4} cjk: {w_cjk_str:4}")
