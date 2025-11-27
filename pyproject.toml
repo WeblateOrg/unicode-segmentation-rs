@@ -6,10 +6,20 @@ requires = ["maturin>=1.10.0,<2.0"]
 classifiers = [
   "Programming Language :: Rust",
   "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy"
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Topic :: Software Development :: Libraries :: Python Modules"
 ]
-description = "Python bindings for the Rust unicode-segmentation crate"
+description = "Unicode segmentation and width for Python using Rust"
+license = "MIT"
+license-files = ["LICENSE"]
 name = "unicode-segmentation-rs"
 readme = "README.md"
 requires-python = ">=3.10"
 version = "0.1.0"
+
+[[project.authors]]
+email = "michal@weblate.org"
+name = "Michal Čihař"
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
