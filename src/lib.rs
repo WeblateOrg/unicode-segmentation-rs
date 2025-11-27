@@ -11,15 +11,14 @@ mod unicode_segmentation_rs {
     /// Split a string into grapheme clusters
     #[pyfunction]
     fn graphemes(text: &str, is_extended: bool) -> PyResult<Vec<String>> {
-        Ok(text.graphemes(is_extended)
-            .map(|s| s.to_string())
-            .collect())
+        Ok(text.graphemes(is_extended).map(|s| s.to_string()).collect())
     }
 
     /// Split a string into grapheme cluster indices
     #[pyfunction]
     fn grapheme_indices(text: &str, is_extended: bool) -> PyResult<Vec<(usize, String)>> {
-        Ok(text.grapheme_indices(is_extended)
+        Ok(text
+            .grapheme_indices(is_extended)
             .map(|(i, s)| (i, s.to_string()))
             .collect())
     }
@@ -33,7 +32,8 @@ mod unicode_segmentation_rs {
     /// Split a string into word indices
     #[pyfunction]
     fn split_word_bound_indices(text: &str) -> PyResult<Vec<(usize, String)>> {
-        Ok(text.split_word_bound_indices()
+        Ok(text
+            .split_word_bound_indices()
             .map(|(i, s)| (i, s.to_string()))
             .collect())
     }
