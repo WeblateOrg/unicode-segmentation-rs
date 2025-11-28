@@ -2,6 +2,23 @@
 build-backend = "maturin"
 requires = ["maturin>=1.10.0,<2.0"]
 
+[dependency-groups]
+build = [
+  "maturin==1.10.2"
+]
+dev = [
+  {include-group = "build"},
+  {include-group = "test"},
+  {include-group = "pre-commit"}
+]
+pre-commit = [
+  "pre-commit==4.5.0"
+]
+test = [
+  "pytest-github-actions-annotate-failures==0.3.0",
+  "pytest==9.0.1"
+]
+
 [project]
 classifiers = [
   "Programming Language :: Rust",
