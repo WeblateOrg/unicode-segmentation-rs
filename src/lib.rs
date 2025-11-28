@@ -8,24 +8,6 @@ mod unicode_segmentation_rs {
     use unicode_segmentation::UnicodeSegmentation;
     use unicode_width::UnicodeWidthStr;
 
-    // Constants for PO file wrapping behavior
-    // These match gettext's behavior for line breaking
-    // po_line_break_chars = {"/", "}", ")", ">", "-"}
-    const PO_LINE_BREAK_CHARS: &[char] = &['/', '}', ')', '>', '-'];
-
-    // po_mergeable_chars = po_line_break_chars | {" ", "\t"}
-    const PO_MERGEABLE_CHARS: &[char] = &['/', '}', ')', '>', '-', ' ', '\t'];
-
-    // po_open_parenthesis_chars = {"{", "("}
-    const PO_OPEN_PARENTHESIS_CHARS: &[char] = &['{', '('];
-
-    // po_punctuation = set(punctuation)
-    // Python's string.punctuation
-    const PO_PUNCTUATION: &[char] = &[
-        '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<',
-        '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~',
-    ];
-
     /// Split a string into grapheme clusters.
     #[pyfunction]
     fn graphemes(text: &str, is_extended: bool) -> PyResult<Vec<String>> {
@@ -179,22 +161,63 @@ mod unicode_segmentation_rs {
     }
 
     /// Check if a string contains only mergeable characters
+    #[inline]
     fn is_mergeable(s: &str) -> bool {
-        s.len() == 1 && PO_MERGEABLE_CHARS.contains(&s.chars().next().unwrap())
+        s.len() == 1
+            && matches!(
+                &s.chars().next().unwrap(),
+                '/' | '}' | ')' | '>' | '-' | ' ' | '\t'
+            )
     }
 
     /// Check if a string starts with an open parenthesis character
+    #[inline]
     fn is_open_parenthesis(c: &char) -> bool {
-        PO_OPEN_PARENTHESIS_CHARS.contains(&c)
+        matches!(c, '{' | '(')
     }
 
-    /// Check if a string contains line break characters
+    /// Check if a string should trigger line break
+    #[inline]
     fn is_line_break(c: &char) -> bool {
-        PO_LINE_BREAK_CHARS.contains(&c)
+        matches!(c, '/' | '}' | ')' | '>' | '-')
     }
 
     /// Check if a string contains punctuation characters
+    #[inline]
     fn is_punctuation(c: &char) -> bool {
-        PO_PUNCTUATION.contains(&c)
+        matches!(
+            c,
+            '!' | '"'
+                | '#'
+                | '$'
+                | '%'
+                | '&'
+                | '\''
+                | '('
+                | ')'
+                | '*'
+                | '+'
+                | ','
+                | '-'
+                | '.'
+                | '/'
+                | ':'
+                | ';'
+                | '<'
+                | '='
+                | '>'
+                | '?'
+                | '@'
+                | '['
+                | '\\'
+                | ']'
+                | '^'
+                | '_'
+                | '`'
+                | '{'
+                | '|'
+                | '}'
+                | '~'
+        )
     }
 }
