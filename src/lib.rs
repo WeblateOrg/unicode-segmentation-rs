@@ -89,10 +89,18 @@ mod unicode_segmentation_rs {
         let mut last_chunk = String::new();
 
         for chunk in text.split_word_bounds() {
-            let chunk_str = chunk.to_string();
+            let mut chunk_str = chunk.to_string();
+
+            // Detect escape sequences and emit them
+            if last_char.is_some() && last_char.unwrap() == '\\' && chunk_str.len() > 1 {
+                last_chunk.push(chunk_str.remove(0));
+                chunks.push(last_chunk.clone());
+                last_chunk.clear();
+            }
+
             let should_merge = last_char.is_some()
                 && (second_last_char.is_none()
-                    || last_char.unwrap() != '\\'
+                    || !matches!(last_char.unwrap(), '\\' | 'n')
                     || second_last_char.unwrap() != '\\')
                 && (is_mergeable(&chunk_str)
                     || (!is_open_parenthesis(&chunk_str.chars().next().unwrap())
@@ -110,10 +118,10 @@ mod unicode_segmentation_rs {
             } else {
                 second_fallback = Some(last_char.unwrap());
             }
-            last_chunk.push_str(chunk);
+            last_chunk.push_str(chunk_str.as_str());
 
             // Update last_char and second_last_char
-            let chars: Vec<char> = chunk.chars().collect();
+            let chars: Vec<char> = chunk_str.chars().collect();
             if chars.len() >= 2 {
                 let len = chars.len();
                 last_char = Some(chars[len - 2]);
@@ -150,6 +158,13 @@ mod unicode_segmentation_rs {
                 }
                 current_line.push_str(chunk.as_str());
                 current_width += chunk_width;
+            }
+
+            // Force break on \n
+            if chunk.ends_with("\\n") {
+                lines.push(current_line.clone());
+                current_line.clear();
+                current_width = 0;
             }
         }
 
