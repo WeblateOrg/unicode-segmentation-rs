@@ -59,6 +59,7 @@ jobs:
 
   linux:
     runs-on: ${{ matrix.platform.runner }}
+    name: Package linux, ${{ matrix.platform.target }}, ${{ matrix.platform.runner }}
     strategy:
       matrix:
         platform:
@@ -110,6 +111,7 @@ jobs:
 
   musllinux:
     runs-on: ${{ matrix.platform.runner }}
+    name: Package musllinux, ${{ matrix.platform.target }}, ${{ matrix.platform.runner }}
     strategy:
       matrix:
         platform:
@@ -159,6 +161,7 @@ jobs:
 
   windows:
     runs-on: ${{ matrix.platform.runner }}
+    name: Package windows, ${{ matrix.platform.target }}, ${{ matrix.platform.runner }}
     strategy:
       matrix:
         platform:
@@ -204,6 +207,7 @@ jobs:
 
   macos:
     runs-on: ${{ matrix.platform.runner }}
+    name: Package macos, ${{ matrix.platform.target }}, ${{ matrix.platform.runner }}
     strategy:
       matrix:
         platform:
@@ -246,6 +250,7 @@ jobs:
 
   sdist:
     runs-on: ubuntu-latest
+    name: Package sdist
     steps:
     - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
       with:
