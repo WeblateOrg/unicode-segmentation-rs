@@ -4,7 +4,6 @@
 
 """Unit tests for unicode-segmentation-rs"""
 
-import pytest
 import unicode_segmentation_rs
 
 
@@ -20,8 +19,7 @@ class TestGraphemes:
         # Family emoji with ZWJ (Zero Width Joiner)
         text = "👨‍👩‍👧‍👦"
         result = unicode_segmentation_rs.graphemes(text, is_extended=True)
-        assert len(result) == 1
-        assert result[0] == text
+        assert result == [text]
 
     def test_combining_characters(self):
         # Devanagari with combining characters
@@ -210,7 +208,3 @@ class TestPerformance:
         text = "a" * 10000
         width = unicode_segmentation_rs.text_width(text)
         assert width == 10000
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])

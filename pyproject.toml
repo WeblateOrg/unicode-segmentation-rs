@@ -27,12 +27,12 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules"
 ]
 description = "Unicode segmentation and width for Python using Rust"
+dynamic = ["version"]
 license = "MIT"
 license-files = ["LICENSE"]
 name = "unicode-segmentation-rs"
 readme = "README.md"
 requires-python = ">=3.10"
-version = "0.1.1"
 
 [[project.authors]]
 email = "michal@weblate.org"

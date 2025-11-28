@@ -8,6 +8,7 @@ Python bindings for the Rust [unicode-segmentation](https://docs.rs/unicode-segm
 - **Word Segmentation**: Split text into words according to Unicode rules
 - **Sentence Segmentation**: Split text into sentences
 - **Display Width Calculation**: Get the display width of text (for terminal/monospace display)
+- **Gettext PO Wrapping**: Wrap text for gettext PO files with proper handling of escape sequences and CJK characters
 
 ## Installation
 
@@ -161,6 +162,28 @@ for c in chars:
     print(f"  {c!r:6} width: {w_str:4} cjk: {w_cjk_str:4}")
 ```
 
+### Gettext PO File Wrapping
+
+```python
+# Wrap text for PO files (default width is 77 characters)
+text = "This is a long translation string that needs to be wrapped appropriately for a gettext PO file"
+lines = unicode_segmentation_rs.gettext_wrap(text, 77)
+for i, line in enumerate(lines, 1):
+    print(f"Line {i}: {line}")
+
+# Wrapping with CJK characters
+text = "This translation contains 中文字符 (Chinese characters) and should wrap correctly"
+lines = unicode_segmentation_rs.gettext_wrap(text, 40)
+for line in lines:
+    width = unicode_segmentation_rs.text_width(line)
+    print(f"[{width:2d} cols] {line}")
+
+# Escape sequences are preserved
+text = "This has\\nline breaks\\tand tabs"
+lines = unicode_segmentation_rs.gettext_wrap(text, 20)
+print(lines)
+```
+
 ## API Reference
 
 ### `graphemes(text: str, is_extended: bool) -> list[str]`
@@ -190,6 +213,15 @@ Split a string into sentences according to Unicode rules.
 ### `text_width(text: str) -> int`
 
 Get the display width of a string in columns (as it would appear in a terminal). East Asian characters typically take 2 columns.
+
+### `gettext_wrap(text: str, width: int) -> list[str]`
+
+Wrap text for gettext PO files. This function follows gettext's wrapping behavior:
+
+- Never breaks escape sequences (`\n`, `\"`, etc.)
+- Prefers breaking after spaces
+- Handles CJK characters with proper width calculation
+- Breaks long words only when necessary
 
 ## Building for Distribution
 
