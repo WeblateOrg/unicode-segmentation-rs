@@ -63,9 +63,8 @@ repos:
 - repo: https://github.com/gitleaks/gitleaks
   rev: v8.30.0
   hooks:
-  - id: gitleaks-docker
-ci:
+  - id: gitleaks
+i:
   autoupdate_schedule: quarterly
   skip:
-  - gitleaks-docker
   - reuse
