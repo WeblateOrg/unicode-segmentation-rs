@@ -180,7 +180,7 @@ mod unicode_segmentation_rs {
 
     /// Check if a string contains only mergeable characters
     fn is_mergeable(s: &str) -> bool {
-        s.chars().all(|c| PO_MERGEABLE_CHARS.contains(&c))
+        s.len() == 1 && PO_MERGEABLE_CHARS.contains(&s.chars().next().unwrap())
     }
 
     /// Check if a string starts with an open parenthesis character

@@ -18,7 +18,7 @@ class TestGettextWrap:
     def test_wrap_with_cjk(self):
         text = "Hello 世界 this is a test"
         result = unicode_segmentation_rs.gettext_wrap(text, 10)
-        assert result == ["Hello 世", "界 this ", "is a ", "test"]
+        assert result == ["Hello 世", "界 this ", "is a test"]
 
     def test_wrap_short_text(self):
         text = "Short"
