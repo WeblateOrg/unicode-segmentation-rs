@@ -46,7 +46,7 @@ jobs:
       id: setup_python
       with:
         python-version: ${{ matrix.python-version }}
-    - uses: astral-sh/setup-uv@ed21f2f24f8dd64503750218de024bcf64c7250a # v7.1.5 # zizmor: ignore[cache-poisoning]
+    - uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867 # v7.1.6 # zizmor: ignore[cache-poisoning]
       # The cache is stored only on main branch and not used for publishing
       with:
         save-cache: ${{ github.ref == 'refs/heads/main' }}
