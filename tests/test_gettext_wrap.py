@@ -235,3 +235,11 @@ class TestGettextWrap:
             "\\n",
             "obhucabhuca ukudibanisa kwakho.</b>",
         ]
+
+    def test_wrap_escape_cjk(self):
+        text = "在 C# 中，请注意 ``_Process()`` 所采用的 ``delta`` 参数类型是 ``double``\\\\ 。 故当我们将其应用于旋转时，需要将其转换为 ``float`` \\\\。"
+        result = unicode_segmentation_rs.gettext_wrap(text, 77)
+        assert result == [
+            "在 C# 中，请注意 ``_Process()`` 所采用的 ``delta`` 参数类型是 ``double``\\\\ ",
+            "。 故当我们将其应用于旋转时，需要将其转换为 ``float`` \\\\。",
+        ]

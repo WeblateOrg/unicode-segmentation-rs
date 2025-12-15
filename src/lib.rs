@@ -96,6 +96,9 @@ mod unicode_segmentation_rs {
                 last_chunk.push(chunk_str.remove(0));
                 chunks.push(last_chunk.clone());
                 last_chunk.clear();
+                if chunk_str.len() == 0 {
+                    continue;
+                }
             }
 
             let should_merge = last_char.is_some()
