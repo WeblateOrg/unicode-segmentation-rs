@@ -54,7 +54,8 @@ jobs:
         version: 0.9.22
         activate-environment: 'true'
     - run: uv sync
-    - run: pytest
+    - name: Run tests
+      run: pytest
 
 
   linux:
