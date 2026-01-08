@@ -56,8 +56,6 @@ jobs:
     - run: uv sync
     - name: Run tests
       run: pytest
-    - name: Verify README examples
-      run: pytest tests/test_readme_examples.py -v
 
 
   linux:
