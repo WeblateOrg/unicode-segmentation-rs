@@ -66,9 +66,9 @@ width = unicode_segmentation_rs.text_width(text)
 print(width)  # 10 (Hello=5, space=1, 世=2, 界=2, but depends on terminal)
 
 # Character width
-print(unicode_segmentation_rs.text_width('A'))    # Some(1)
-print(unicode_segmentation_rs.text_width('世'))   # Some(2)
-print(unicode_segmentation_rs.text_width('\t'))   # None (control character)
+print(unicode_segmentation_rs.text_width('A'))    # 1
+print(unicode_segmentation_rs.text_width('世'))   # 2
+print(unicode_segmentation_rs.text_width('\t'))   # 1 (control characters have width 1)
 ```
 
 ## Examples
