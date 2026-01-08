@@ -31,13 +31,13 @@ class TestReadmeBasicUsage:
         """Test word boundaries example from README"""
         text = "Hello, world!"
         words = unicode_segmentation_rs.split_word_bounds(text)
-        assert words == ['Hello', ',', ' ', 'world', '!']
+        assert words == ["Hello", ",", " ", "world", "!"]
 
     def test_unicode_words(self):
         """Test unicode words example from README"""
         text = "Hello, world!"
         words = unicode_segmentation_rs.unicode_words(text)
-        assert words == ['Hello', 'world']
+        assert words == ["Hello", "world"]
 
     def test_word_indices(self):
         """Test word indices example from README"""
@@ -61,9 +61,9 @@ class TestReadmeBasicUsage:
 
     def test_character_width(self):
         """Test character width examples from README"""
-        assert unicode_segmentation_rs.text_width('A') == 1
-        assert unicode_segmentation_rs.text_width('世') == 2
-        assert unicode_segmentation_rs.text_width('\t') == 1
+        assert unicode_segmentation_rs.text_width("A") == 1
+        assert unicode_segmentation_rs.text_width("世") == 2
+        assert unicode_segmentation_rs.text_width("\t") == 1
 
 
 class TestReadmeGraphemeExamples:
@@ -171,7 +171,7 @@ class TestReadmeDisplayWidthExamples:
 
     def test_character_widths_various(self):
         """Test character width for various characters"""
-        chars = ['a', 'A', '1', ' ', '世', '界', 'あ', '🎉', '\t', '\n']
+        chars = ["a", "A", "1", " ", "世", "界", "あ", "🎉", "\t", "\n"]
         for c in chars:
             w = unicode_segmentation_rs.text_width(c)
             assert isinstance(w, int)
@@ -203,5 +203,5 @@ class TestReadmeGettextWrapExamples:
         lines = unicode_segmentation_rs.gettext_wrap(text, 20)
         assert isinstance(lines, list)
         # Verify escape sequences are preserved
-        full_text = ''.join(lines)
+        full_text = "".join(lines)
         assert "\\n" in full_text or "\\t" in full_text
