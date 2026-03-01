@@ -84,21 +84,21 @@ jobs:
       with:
         python-version: 3.x
     - name: Build wheels
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist
         sccache: false
         manylinux: auto
     - name: Build free-threaded wheels
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python3.14t
         sccache: false
         manylinux: auto
     - name: Build free-threaded wheels
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python3.13t
@@ -132,14 +132,14 @@ jobs:
       with:
         python-version: 3.x
     - name: Build wheels
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist
         sccache: false
         manylinux: musllinux_1_2
     - name: Build free-threaded wheels
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python3.13t
@@ -147,7 +147,7 @@ jobs:
         sccache: false
         manylinux: musllinux_1_2
     - name: Build free-threaded wheels
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python3.14t
@@ -179,7 +179,7 @@ jobs:
         python-version: 3.x
         architecture: ${{ matrix.platform.target }}
     - name: Build wheels
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist
@@ -189,13 +189,13 @@ jobs:
         python-version: 3.13t
         architecture: ${{ matrix.platform.target }}
     - name: Build free-threaded wheels
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python3.13t
         sccache: false
     - name: Build free-threaded wheels
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python3.14t
@@ -224,20 +224,20 @@ jobs:
       with:
         python-version: 3.x
     - name: Build wheels
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist
         sccache: false
     - name: Build free-threaded wheels
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python3.13t
 
         sccache: false
     - name: Build free-threaded wheels
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python3.14t
@@ -257,7 +257,7 @@ jobs:
       with:
         persist-credentials: false
     - name: Build sdist
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         command: sdist
         args: --out dist
@@ -303,7 +303,7 @@ jobs:
         subject-path: wheels-*/*
     - name: Publish to PyPI
       if: ${{ startsWith(github.ref, 'refs/tags/') }}
-      uses: PyO3/maturin-action@b1bd829e37fef14c63f19162034228a2f3dc1021 # v1.50.0
+      uses: PyO3/maturin-action@04ac600d27cdf7a9a280dadf7147097c42b757ad # v1.50.1
       with:
         command: upload
         args: --non-interactive --skip-existing wheels-*/*
