@@ -45,6 +45,21 @@ class TestGettextWrap:
         result = unicode_segmentation_rs.gettext_wrap(text, 11)
         assert result == ["This has \\n", " escape ", "sequences ", "\\t in it"]
 
+    def test_wrap_with_carriage_return_escape(self):
+        text = r"foo\rbar baz"
+        result = unicode_segmentation_rs.gettext_wrap(text, 5)
+        assert result == [r"foo\r", "bar ", "baz"]
+
+    def test_wrap_with_consecutive_escape_sequences(self):
+        text = r"abc\n\nxyz"
+        result = unicode_segmentation_rs.gettext_wrap(text, 10)
+        assert result == [r"abc\n", r"\n", "xyz"]
+
+    def test_wrap_with_doubled_backslash_before_escape(self):
+        text = r"foo\\nbar"
+        result = unicode_segmentation_rs.gettext_wrap(text, 5)
+        assert result == [r"foo\\n", "bar"]
+
     def test_wrap_long_word(self):
         # Long words that don't fit should still be included
         text = "Supercalifragilisticexpialidocious"
@@ -111,6 +126,26 @@ class TestGettextWrap:
             "効率的なバグの報告はPostGISの開発を助ける本質的な方法です。最も効率的なバグ報",
             "告は、PostGIS開発者がそれを再現できるようにすることで、それの引き金となったス",
         ]
+
+    def test_wrap_combining_character_sequence(self):
+        text = "Cafe\u0301 society"
+        result = unicode_segmentation_rs.gettext_wrap(text, 5)
+        assert result == ["Cafe\u0301 ", "society"]
+
+    def test_wrap_standalone_combining_mark(self):
+        text = "\u0301x"
+        result = unicode_segmentation_rs.gettext_wrap(text, 1)
+        assert result == [text]
+
+    def test_wrap_fullwidth_punctuation_behavior(self):
+        text = "你好，世界你好，世界"
+        result = unicode_segmentation_rs.gettext_wrap(text, 8)
+        assert result == ["你好，世", "界你好，", "世界"]
+
+    def test_wrap_fullwidth_parentheses_behavior(self):
+        text = "foo（bar）bazfoo（bar）baz"
+        result = unicode_segmentation_rs.gettext_wrap(text, 12)
+        assert result == ["foo（bar）", "bazfoo（bar", "）baz"]
 
     def test_wrap_emoji(self):
         text = 'print(ts.string_get_word_breaks("Test ❤️‍🔥 Test")) # Prints [1, 2, 3, 4, 5, '
@@ -243,3 +278,26 @@ class TestGettextWrap:
             "在 C# 中，请注意 ``_Process()`` 所采用的 ``delta`` 参数类型是 ``double``\\\\ ",
             "。 故当我们将其应用于旋转时，需要将其转换为 ``float`` \\\\。",
         ]
+
+    def test_wrap_round_trip_invariant(self):
+        samples = [
+            r"abc\n\nxyz",
+            r"foo\rbar baz",
+            r"foo\\nbar",
+            "Cafe\u0301 society",
+            "你好，世界你好，世界",
+            "foo（bar）bazfoo（bar）baz",
+        ]
+        for text in samples:
+            assert "".join(unicode_segmentation_rs.gettext_wrap(text, 8)) == text
+
+    def test_wrap_width_invariant(self):
+        samples = [
+            ("This is a simple test string", 20),
+            (r"abc\n\nxyz", 10),
+            (r"foo\rbar baz", 5),
+            ("你好，世界你好，世界", 8),
+        ]
+        for text, width in samples:
+            for line in unicode_segmentation_rs.gettext_wrap(text, width):
+                assert unicode_segmentation_rs.text_width(line) <= width
