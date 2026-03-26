@@ -1,5 +1,5 @@
 [dependencies]
-pyo3 = {version = "0.28.0", features = ["extension-module", "abi3-py310", "generate-import-lib"]}
+pyo3 = {version = "0.28.2", features = ["extension-module", "abi3-py310", "generate-import-lib"]}
 unicode-segmentation = "1.13.2"
 unicode-width = "0.2.2"
 
