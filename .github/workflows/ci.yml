@@ -80,14 +80,12 @@ jobs:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         persist-credentials: false
-    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-      with:
-        python-version: 3.x
     - name: Build wheels
       uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
       with:
         target: ${{ matrix.platform.target }}
-        args: --release --out dist
+        # Build the stable-ABI wheel against CPython 3.10 so it is tagged cp310-abi3 everywhere.
+        args: --release --out dist -i python3.10
         sccache: false
         manylinux: auto
     - name: Build free-threaded wheels
@@ -128,14 +126,11 @@ jobs:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         persist-credentials: false
-    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-      with:
-        python-version: 3.x
     - name: Build wheels
       uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
       with:
         target: ${{ matrix.platform.target }}
-        args: --release --out dist
+        args: --release --out dist -i python3.10
         sccache: false
         manylinux: musllinux_1_2
     - name: Build free-threaded wheels
@@ -176,13 +171,13 @@ jobs:
         persist-credentials: false
     - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
       with:
-        python-version: 3.x
+        python-version: '3.10'
         architecture: ${{ matrix.platform.target }}
     - name: Build wheels
       uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
       with:
         target: ${{ matrix.platform.target }}
-        args: --release --out dist
+        args: --release --out dist -i python
         sccache: false
     - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
       with:
@@ -222,12 +217,12 @@ jobs:
         persist-credentials: false
     - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
       with:
-        python-version: 3.x
+        python-version: '3.10'
     - name: Build wheels
       uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
       with:
         target: ${{ matrix.platform.target }}
-        args: --release --out dist
+        args: --release --out dist -i python
         sccache: false
     - name: Build free-threaded wheels
       uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
