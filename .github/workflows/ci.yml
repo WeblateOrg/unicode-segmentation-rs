@@ -95,13 +95,6 @@ jobs:
         args: --release --out dist -i python3.14t
         sccache: false
         manylinux: auto
-    - name: Build free-threaded wheels
-      uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
-      with:
-        target: ${{ matrix.platform.target }}
-        args: --release --out dist -i python3.13t
-        sccache: false
-        manylinux: auto
     - name: Upload wheels
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
@@ -131,14 +124,6 @@ jobs:
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python3.10
-        sccache: false
-        manylinux: musllinux_1_2
-    - name: Build free-threaded wheels
-      uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
-      with:
-        target: ${{ matrix.platform.target }}
-        args: --release --out dist -i python3.13t
-
         sccache: false
         manylinux: musllinux_1_2
     - name: Build free-threaded wheels
@@ -181,14 +166,8 @@ jobs:
         sccache: false
     - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
       with:
-        python-version: 3.13t
+        python-version: 3.14t
         architecture: ${{ matrix.platform.target }}
-    - name: Build free-threaded wheels
-      uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
-      with:
-        target: ${{ matrix.platform.target }}
-        args: --release --out dist -i python3.13t
-        sccache: false
     - name: Build free-threaded wheels
       uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
       with:
@@ -223,13 +202,6 @@ jobs:
       with:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python
-        sccache: false
-    - name: Build free-threaded wheels
-      uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
-      with:
-        target: ${{ matrix.platform.target }}
-        args: --release --out dist -i python3.13t
-
         sccache: false
     - name: Build free-threaded wheels
       uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
