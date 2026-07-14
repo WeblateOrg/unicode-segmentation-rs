@@ -274,4 +274,4 @@ pytest tests/
 
 ## License
 
-This project follows the same license as the underlying unicode-segmentation crate.
+This project is licensed under the Apache License 2.0.

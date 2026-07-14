@@ -1,6 +1,6 @@
 // Copyright © Michal Čihař <michal@weblate.org>
 //
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 #[pyo3::pymodule(gil_used = false)]
 mod unicode_segmentation_rs {

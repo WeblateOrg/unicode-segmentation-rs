@@ -28,7 +28,7 @@ classifiers = [
 ]
 description = "Unicode segmentation and width for Python using Rust"
 dynamic = ["version"]
-license = "MIT"
+license = "Apache-2.0"
 license-files = ["LICENSE"]
 name = "unicode-segmentation-rs"
 readme = "README.md"
