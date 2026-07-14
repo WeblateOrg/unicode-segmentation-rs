@@ -1,6 +1,6 @@
 # Copyright © Michal Čihař <michal@weblate.org>
 #
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 """
 Type stubs for unicode-segmentation-rs
 

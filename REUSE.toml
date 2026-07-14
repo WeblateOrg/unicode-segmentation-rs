@@ -5,12 +5,12 @@ version = 1
 
 [[annotations]]
 SPDX-FileCopyrightText = "Michal Čihař <michal@weblate.org>"
-SPDX-License-Identifier = "MIT"
+SPDX-License-Identifier = "Apache-2.0"
 path = [".coveragerc", ".dockerignore", ".gitignore", ".isort.cfg", ".pre-commit-config.yaml", "MANIFEST.in", "codecov.yml", "requirements**.txt", "setup.cfg", "pyproject.toml", ".editorconfig", ".well-known/**", "Cargo.toml"]
 precedence = "aggregate"
 
 [[annotations]]
 SPDX-FileCopyrightText = "Michal Čihař <michal@weblate.org>"
-SPDX-License-Identifier = "MIT"
+SPDX-License-Identifier = "Apache-2.0"
 path = ["README.md"]
 precedence = "aggregate"
