@@ -53,6 +53,18 @@ class TestReadmeBasicUsage:
         assert isinstance(sentences, list)
         assert len(sentences) == 3
 
+    def test_line_breaks(self):
+        """Test line-break examples from README"""
+        text = "你好世界"
+        breaks = unicode_segmentation_rs.line_breaks(text)
+        assert breaks == [(3, False), (6, False), (9, False), (12, True)]
+        assert unicode_segmentation_rs.line_break_units(text) == [
+            "你",
+            "好",
+            "世",
+            "界",
+        ]
+
     def test_display_width(self):
         """Test display width example from README"""
         text = "Hello 世界"
@@ -124,6 +136,25 @@ class TestReadmeSentenceExamples:
         sentences = unicode_segmentation_rs.unicode_sentences(text)
         assert isinstance(sentences, list)
         assert len(sentences) >= 3
+
+
+class TestReadmeLineBreakExamples:
+    """Tests for line-break segmentation examples"""
+
+    def test_legal_break_units(self):
+        text = "Hello 世界"
+        assert unicode_segmentation_rs.line_break_units(text) == [
+            "Hello ",
+            "世",
+            "界",
+        ]
+
+    def test_soft_hyphen_is_preserved(self):
+        text = "foo\u00adbar"
+        assert unicode_segmentation_rs.line_break_units(text) == [
+            "foo\u00ad",
+            "bar",
+        ]
 
 
 class TestReadmeMultilingualExamples:

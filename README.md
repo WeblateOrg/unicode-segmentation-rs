@@ -1,12 +1,13 @@
 # unicode-segmentation-rs
 
-Python bindings for the Rust [unicode-segmentation](https://docs.rs/unicode-segmentation/) and [unicode-width](https://docs.rs/unicode-width/) crates, providing Unicode text segmentation and width calculation according to Unicode standards.
+Python bindings for the Rust [unicode-segmentation](https://docs.rs/unicode-segmentation/), [unicode-linebreak](https://docs.rs/unicode-linebreak/), and [unicode-width](https://docs.rs/unicode-width/) crates, providing Unicode text segmentation and width calculation according to Unicode standards.
 
 ## Features
 
 - **Grapheme Cluster Segmentation**: Split text into user-perceived characters
 - **Word Segmentation**: Split text into words according to Unicode rules
 - **Sentence Segmentation**: Split text into sentences
+- **Line-Break Segmentation**: Find legal wrapping opportunities according to Unicode Standard Annex #14
 - **Display Width Calculation**: Get the display width of text (for terminal/monospace display)
 - **Gettext PO Wrapping**: Wrap text for gettext PO files with proper handling of escape sequences and CJK characters
 
@@ -59,6 +60,13 @@ print(indices)  # [(0, 'Hello'), (5, ','), ...]
 text = "Hello world. How are you? I'm fine."
 sentences = unicode_segmentation_rs.unicode_sentences(text)
 print(sentences)  # ['Hello world. ', 'How are you? ', "I'm fine."]
+
+# Line-break opportunities use UTF-8 byte offsets
+text = "你好世界"
+breaks = unicode_segmentation_rs.line_breaks(text)
+print(breaks)  # [(3, False), (6, False), (9, False), (12, True)]
+units = unicode_segmentation_rs.line_break_units(text)
+print(units)  # ['你', '好', '世', '界']
 
 # Display width calculation
 text = "Hello 世界"
@@ -115,6 +123,23 @@ print("Sentences:")
 for i, sentence in enumerate(sentences, 1):
     print(f"  {i}. {sentence!r}")
 ```
+
+### Line-Break Segmentation
+
+```python
+# Find legal wrapping opportunities without measuring or reformatting text
+text = "Hello 世界"
+print(unicode_segmentation_rs.line_breaks(text))
+print(unicode_segmentation_rs.line_break_units(text))  # ['Hello ', '世', '界']
+
+# A soft hyphen is preserved in the unit before its discretionary break
+text = "foo\u00adbar"
+print(unicode_segmentation_rs.line_break_units(text))  # ['foo\u00ad', 'bar']
+```
+
+Line-break segmentation reports opportunities only. The caller remains responsible for measuring widths, trimming whitespace for display, and rendering a visible hyphen when selecting a soft-hyphen break.
+
+The underlying `unicode-linebreak` crate treats complex-context (`SA`) characters as ordinary alphabetic characters rather than performing dictionary-based segmentation. Consequently, scripts such as Thai, Lao, and Khmer do not receive language-specific word break opportunities.
 
 ### Multilingual Examples
 
@@ -205,6 +230,14 @@ Get Unicode words from a string (excludes punctuation and whitespace).
 ### `unicode_sentences(text: str) -> list[str]`
 
 Split a string into sentences according to Unicode rules.
+
+### `line_breaks(text: str) -> list[tuple[int, bool]]`
+
+Return every allowed or mandatory Unicode line-break opportunity as `(utf8_byte_offset, mandatory)`. The boolean is `True` only for mandatory breaks. Non-empty input includes the mandatory end-of-text opportunity.
+
+### `line_break_units(text: str) -> list[str]`
+
+Split a string at every allowed or mandatory Unicode line-break opportunity. Every input code point is preserved exactly, and the mandatory end-of-text opportunity does not add an empty unit.
 
 ### `text_width(text: str) -> int`
 

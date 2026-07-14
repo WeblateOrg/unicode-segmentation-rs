@@ -110,6 +110,93 @@ class TestSentenceSegmentation:
         assert len(result) == 2
 
 
+class TestLineBreakSegmentation:
+    """Tests for Unicode line-break segmentation"""
+
+    def test_empty_string(self):
+        assert unicode_segmentation_rs.line_breaks("") == []
+        assert unicode_segmentation_rs.line_break_units("") == []
+
+    def test_ascii_words(self):
+        text = "Hello world!"
+        assert unicode_segmentation_rs.line_breaks(text) == [
+            (6, False),
+            (12, True),
+        ]
+        assert unicode_segmentation_rs.line_break_units(text) == ["Hello ", "world!"]
+
+    def test_cjk(self):
+        text = "你好世界"
+        assert unicode_segmentation_rs.line_breaks(text) == [
+            (3, False),
+            (6, False),
+            (9, False),
+            (12, True),
+        ]
+        assert unicode_segmentation_rs.line_break_units(text) == [
+            "你",
+            "好",
+            "世",
+            "界",
+        ]
+
+    def test_korean_hangul(self):
+        text = "한글한글"
+        assert unicode_segmentation_rs.line_breaks(text) == [
+            (3, False),
+            (6, False),
+            (9, False),
+            (12, True),
+        ]
+        assert unicode_segmentation_rs.line_break_units(text) == [
+            "한",
+            "글",
+            "한",
+            "글",
+        ]
+
+    def test_soft_hyphen(self):
+        text = "foo\u00adbar"
+        assert unicode_segmentation_rs.line_breaks(text) == [(5, False), (8, True)]
+        assert unicode_segmentation_rs.line_break_units(text) == [
+            "foo\u00ad",
+            "bar",
+        ]
+
+    def test_non_breaking_characters(self):
+        for character in ["\u00a0", "\u2011", "\u202f", "\u2060", "\ufeff"]:
+            text = f"hello{character}world"
+            assert unicode_segmentation_rs.line_breaks(text) == [
+                (len(text.encode()), True)
+            ]
+            assert unicode_segmentation_rs.line_break_units(text) == [text]
+
+    def test_mandatory_newline(self):
+        text = "hello\nworld"
+        assert unicode_segmentation_rs.line_breaks(text) == [(6, True), (11, True)]
+        assert unicode_segmentation_rs.line_break_units(text) == ["hello\n", "world"]
+
+    def test_combining_sequence(self):
+        text = "e\u0301"
+        assert unicode_segmentation_rs.line_breaks(text) == [(3, True)]
+        assert unicode_segmentation_rs.line_break_units(text) == [text]
+
+    def test_emoji_zwj_sequence(self):
+        text = "👨‍👩‍👧‍👦"
+        assert unicode_segmentation_rs.line_breaks(text) == [(25, True)]
+        assert unicode_segmentation_rs.line_break_units(text) == [text]
+
+    def test_utf8_byte_offsets(self):
+        text = "你 好"
+        assert unicode_segmentation_rs.line_breaks(text) == [(4, False), (7, True)]
+        assert unicode_segmentation_rs.line_break_units(text) == ["你 ", "好"]
+
+    def test_end_of_text_does_not_add_empty_unit(self):
+        text = "word"
+        assert unicode_segmentation_rs.line_breaks(text) == [(4, True)]
+        assert unicode_segmentation_rs.line_break_units(text) == [text]
+
+
 class TestDisplayWidth:
     """Tests for display width calculation"""
 
