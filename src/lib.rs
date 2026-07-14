@@ -5,6 +5,7 @@
 #[pyo3::pymodule(gil_used = false)]
 mod unicode_segmentation_rs {
     use pyo3::prelude::*;
+    use unicode_linebreak::{BreakOpportunity, linebreaks as unicode_linebreaks};
     use unicode_segmentation::UnicodeSegmentation;
     use unicode_width::UnicodeWidthStr;
 
@@ -48,6 +49,36 @@ mod unicode_segmentation_rs {
     #[pyfunction]
     fn unicode_sentences(text: &str) -> PyResult<Vec<String>> {
         Ok(text.unicode_sentences().map(|s| s.to_string()).collect())
+    }
+
+    /// Get Unicode line-break opportunities as UTF-8 byte offsets.
+    #[pyfunction]
+    fn line_breaks(text: &str) -> PyResult<Vec<(usize, bool)>> {
+        if text.is_empty() {
+            return Ok(vec![]);
+        }
+
+        Ok(unicode_linebreaks(text)
+            .map(|(offset, opportunity)| (offset, opportunity == BreakOpportunity::Mandatory))
+            .collect())
+    }
+
+    /// Split a string at every Unicode line-break opportunity.
+    #[pyfunction]
+    fn line_break_units(text: &str) -> PyResult<Vec<String>> {
+        let mut previous_offset = 0;
+
+        Ok(unicode_linebreaks(text)
+            .filter_map(|(offset, _)| {
+                if offset == previous_offset {
+                    None
+                } else {
+                    let unit = text[previous_offset..offset].to_string();
+                    previous_offset = offset;
+                    Some(unit)
+                }
+            })
+            .collect())
     }
 
     /// Get the display width of a string (as it would appear in a terminal)
@@ -96,7 +127,7 @@ mod unicode_segmentation_rs {
                 last_chunk.push(chunk_str.remove(0));
                 chunks.push(last_chunk.clone());
                 last_chunk.clear();
-                if chunk_str.len() == 0 {
+                if chunk_str.is_empty() {
                     continue;
                 }
             }
