@@ -235,6 +235,7 @@ jobs:
         path: dist
 
   all-tests:
+    if: ${{ always() }}
     needs:
     - test
     - linux
@@ -245,7 +246,19 @@ jobs:
     name: CI passed
     runs-on: ubuntu-slim
     steps:
-    - run: echo
+    - name: Verify dependent jobs
+      env:
+        RESULTS: ${{ join(needs.*.result, ' ') }}
+      run: |
+        count=0
+        for result in $RESULTS; do
+          count=$((count + 1))
+          if test "$result" != success; then
+            echo "Dependent job result: $result"
+            exit 1
+          fi
+        done
+        test "$count" -eq 6
 
   release:
     name: Release
