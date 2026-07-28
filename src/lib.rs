@@ -6,7 +6,7 @@
 mod unicode_segmentation_rs {
     use pyo3::prelude::*;
     use unicode_linebreak::{BreakOpportunity, linebreaks as unicode_linebreaks};
-    use unicode_segmentation::UnicodeSegmentation;
+    use unicode_segmentation::{UWordBoundIndices, UnicodeSegmentation};
     use unicode_width::UnicodeWidthStr;
 
     /// Split a string into grapheme clusters.
@@ -104,76 +104,109 @@ mod unicode_segmentation_rs {
             };
         }
 
-        // Split text into chunks at word boundaries
-        let chunks = split_po_chunks(text);
-
-        // Wrap chunks into lines
-        Ok(wrap_po_chunks(&chunks, width))
+        Ok(wrap_po_chunks(PoChunks::new(text), width))
     }
 
-    /// Split text into chunks using word boundaries with PO-specific rules
-    fn split_po_chunks(text: &str) -> Vec<String> {
-        let mut chunks: Vec<String> = Vec::new();
-        let mut last_char: Option<char> = None;
-        let mut second_last_char: Option<char> = None;
-        let mut second_fallback: Option<char>;
-        let mut last_chunk = String::new();
+    /// Iterator over borrowed chunks split using word boundaries and PO-specific rules.
+    struct PoChunks<'a> {
+        text: &'a str,
+        word_bounds: UWordBoundIndices<'a>,
+        chunk_start: Option<usize>,
+        last_char: Option<char>,
+        second_last_char: Option<char>,
+    }
 
-        for chunk in text.split_word_bounds() {
-            let mut chunk_str = chunk.to_string();
+    impl<'a> PoChunks<'a> {
+        fn new(text: &'a str) -> Self {
+            Self {
+                text,
+                word_bounds: text.split_word_bound_indices(),
+                chunk_start: None,
+                last_char: None,
+                second_last_char: None,
+            }
+        }
 
-            // Detect escape sequences and emit them
-            if last_char.is_some() && last_char.unwrap() == '\\' && chunk_str.len() > 1 {
-                last_chunk.push(chunk_str.remove(0));
-                chunks.push(last_chunk.clone());
-                last_chunk.clear();
-                if chunk_str.is_empty() {
-                    continue;
+        /// Add a word-boundary segment and return the completed chunk's byte range, if any.
+        fn add_segment(
+            &mut self,
+            segment_start: usize,
+            segment: &str,
+        ) -> Option<std::ops::Range<usize>> {
+            let first_char = segment.chars().next().unwrap();
+            let should_merge = self.last_char.is_some_and(|last_char| {
+                (self.second_last_char.is_none()
+                    || !matches!(last_char, '\\' | 'n')
+                    || self.second_last_char != Some('\\'))
+                    && (is_mergeable(segment)
+                        || (!is_open_parenthesis(&first_char)
+                            && !is_line_break(&last_char)
+                            && (is_punctuation(&last_char)
+                                || (is_punctuation(&first_char) && !last_char.is_whitespace()))))
+            });
+
+            let completed = if should_merge {
+                if self.chunk_start.is_none() {
+                    self.chunk_start = Some(segment_start);
+                }
+                None
+            } else {
+                self.chunk_start
+                    .replace(segment_start)
+                    .map(|start| start..segment_start)
+            };
+
+            let second_fallback = if should_merge { self.last_char } else { None };
+            let mut chars = segment.chars().rev();
+            let final_char = chars.next().unwrap();
+            if let Some(penultimate_char) = chars.next() {
+                self.last_char = Some(penultimate_char);
+                self.second_last_char = Some(final_char);
+            } else {
+                self.last_char = Some(final_char);
+                self.second_last_char = second_fallback;
+            }
+
+            completed
+        }
+    }
+
+    impl<'a> Iterator for PoChunks<'a> {
+        type Item = &'a str;
+
+        fn next(&mut self) -> Option<Self::Item> {
+            while let Some((segment_start, segment)) = self.word_bounds.next() {
+                // Keep an escape sequence in the chunk before it, then emit that chunk.
+                if self.last_char == Some('\\') && segment.len() > 1 {
+                    let first_char_len = segment.chars().next().unwrap().len_utf8();
+                    let segment_end = segment_start + first_char_len;
+                    let completed_start = self.chunk_start.take().unwrap_or(segment_start);
+                    let remainder = &segment[first_char_len..];
+
+                    if !remainder.is_empty() {
+                        let pending = self.add_segment(segment_end, remainder);
+                        debug_assert!(
+                            pending.is_none(),
+                            "an emitted escape sequence should leave no pending chunk"
+                        );
+                    }
+
+                    return Some(&self.text[completed_start..segment_end]);
+                }
+
+                if let Some(completed) = self.add_segment(segment_start, segment) {
+                    return Some(&self.text[completed]);
                 }
             }
 
-            let should_merge = last_char.is_some()
-                && (second_last_char.is_none()
-                    || !matches!(last_char.unwrap(), '\\' | 'n')
-                    || second_last_char.unwrap() != '\\')
-                && (is_mergeable(&chunk_str)
-                    || (!is_open_parenthesis(&chunk_str.chars().next().unwrap())
-                        && !is_line_break(&last_char.unwrap())
-                        && (is_punctuation(&last_char.unwrap())
-                            || (is_punctuation(&chunk_str.chars().next().unwrap())
-                                && !last_char.unwrap().is_whitespace()))));
-
-            if !should_merge {
-                if !last_chunk.is_empty() {
-                    chunks.push(last_chunk.clone())
-                }
-                last_chunk.clear();
-                second_fallback = None;
-            } else {
-                second_fallback = Some(last_char.unwrap());
-            }
-            last_chunk.push_str(chunk_str.as_str());
-
-            // Update last_char and second_last_char
-            let chars: Vec<char> = chunk_str.chars().collect();
-            if chars.len() >= 2 {
-                let len = chars.len();
-                last_char = Some(chars[len - 2]);
-                second_last_char = Some(chars[len - 1]);
-            } else {
-                second_last_char = second_fallback;
-                last_char = Some(chars[0]);
-            }
+            self.chunk_start
+                .take()
+                .map(|start| &self.text[start..self.text.len()])
         }
-        if !last_chunk.is_empty() {
-            chunks.push(last_chunk.clone())
-        }
-
-        chunks
     }
 
-    /// Wrap chunks into lines respecting the width limit
-    fn wrap_po_chunks(chunks: &Vec<String>, width: usize) -> Vec<String> {
+    /// Wrap borrowed chunks into lines respecting the width limit.
+    fn wrap_po_chunks<'a>(chunks: impl IntoIterator<Item = &'a str>, width: usize) -> Vec<String> {
         let mut lines = Vec::new();
         let mut current_line = String::new();
         let mut current_width = 0;
@@ -181,29 +214,22 @@ mod unicode_segmentation_rs {
         for chunk in chunks {
             let chunk_width: usize = chunk.width();
 
-            if current_width + chunk_width <= width {
-                current_line.push_str(chunk.as_str());
-                current_width += chunk_width;
-            } else {
-                if !current_line.is_empty() {
-                    lines.push(current_line.clone());
-                    current_line.clear();
-                    current_width = 0;
-                }
-                current_line.push_str(chunk.as_str());
-                current_width += chunk_width;
+            if current_width + chunk_width > width && !current_line.is_empty() {
+                lines.push(std::mem::take(&mut current_line));
+                current_width = 0;
             }
+            current_line.push_str(chunk);
+            current_width += chunk_width;
 
             // Force break on \n
             if chunk.ends_with("\\n") {
-                lines.push(current_line.clone());
-                current_line.clear();
+                lines.push(std::mem::take(&mut current_line));
                 current_width = 0;
             }
         }
 
         if !current_line.is_empty() {
-            lines.push(current_line.clone());
+            lines.push(current_line);
         }
 
         lines
