@@ -5,50 +5,54 @@
 #[pyo3::pymodule(gil_used = false)]
 mod unicode_segmentation_rs {
     use pyo3::prelude::*;
+    use pyo3::types::PyList;
     use unicode_linebreak::{BreakOpportunity, linebreaks as unicode_linebreaks};
     use unicode_segmentation::UnicodeSegmentation;
     use unicode_width::UnicodeWidthStr;
 
     /// Split a string into grapheme clusters.
     #[pyfunction]
-    fn graphemes(text: &str, is_extended: bool) -> PyResult<Vec<String>> {
-        Ok(text.graphemes(is_extended).map(|s| s.to_string()).collect())
+    fn graphemes<'py>(
+        py: Python<'py>,
+        text: &str,
+        is_extended: bool,
+    ) -> PyResult<Bound<'py, PyList>> {
+        PyList::new(py, text.graphemes(is_extended))
     }
 
     /// Split a string into grapheme cluster indices
     #[pyfunction]
-    fn grapheme_indices(text: &str, is_extended: bool) -> PyResult<Vec<(usize, String)>> {
-        Ok(text
-            .grapheme_indices(is_extended)
-            .map(|(i, s)| (i, s.to_string()))
-            .collect())
+    fn grapheme_indices<'py>(
+        py: Python<'py>,
+        text: &str,
+        is_extended: bool,
+    ) -> PyResult<Bound<'py, PyList>> {
+        PyList::new(py, text.grapheme_indices(is_extended))
     }
 
     /// Split a string at word boundaries (includes punctuation and whitespace).
     #[pyfunction]
-    fn split_word_bounds(text: &str) -> PyResult<Vec<String>> {
-        Ok(text.split_word_bounds().map(|s| s.to_string()).collect())
+    fn split_word_bounds<'py>(py: Python<'py>, text: &str) -> PyResult<Bound<'py, PyList>> {
+        PyList::new(py, text.split_word_bounds())
     }
 
     /// Split a string at word boundaries with indices.
     #[pyfunction]
-    fn split_word_bound_indices(text: &str) -> PyResult<Vec<(usize, String)>> {
-        Ok(text
-            .split_word_bound_indices()
-            .map(|(i, s)| (i, s.to_string()))
-            .collect())
+    fn split_word_bound_indices<'py>(py: Python<'py>, text: &str) -> PyResult<Bound<'py, PyList>> {
+        PyList::new(py, text.split_word_bound_indices())
     }
 
     /// Get Unicode words from a string (excludes punctuation and whitespace).
     #[pyfunction]
-    fn unicode_words(text: &str) -> PyResult<Vec<String>> {
-        Ok(text.unicode_words().map(|s| s.to_string()).collect())
+    fn unicode_words<'py>(py: Python<'py>, text: &str) -> PyResult<Bound<'py, PyList>> {
+        PyList::new(py, text.unicode_words())
     }
 
     /// Split a string at word boundaries (includes punctuation and whitespace).
     #[pyfunction]
-    fn unicode_sentences(text: &str) -> PyResult<Vec<String>> {
-        Ok(text.unicode_sentences().map(|s| s.to_string()).collect())
+    fn unicode_sentences<'py>(py: Python<'py>, text: &str) -> PyResult<Bound<'py, PyList>> {
+        let mut sentences = text.unicode_sentences();
+        PyList::new(py, std::iter::from_fn(move || sentences.next()))
     }
 
     /// Get Unicode line-break opportunities as UTF-8 byte offsets.
@@ -65,20 +69,21 @@ mod unicode_segmentation_rs {
 
     /// Split a string at every Unicode line-break opportunity.
     #[pyfunction]
-    fn line_break_units(text: &str) -> PyResult<Vec<String>> {
+    fn line_break_units<'py>(py: Python<'py>, text: &str) -> PyResult<Bound<'py, PyList>> {
         let mut previous_offset = 0;
 
-        Ok(unicode_linebreaks(text)
-            .filter_map(|(offset, _)| {
+        PyList::new(
+            py,
+            unicode_linebreaks(text).filter_map(|(offset, _)| {
                 if offset == previous_offset {
                     None
                 } else {
-                    let unit = text[previous_offset..offset].to_string();
+                    let unit = &text[previous_offset..offset];
                     previous_offset = offset;
                     Some(unit)
                 }
-            })
-            .collect())
+            }),
+        )
     }
 
     /// Get the display width of a string (as it would appear in a terminal)
