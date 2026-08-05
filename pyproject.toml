@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "maturin"
-requires = ["maturin>=1.10.0,<2.0"]
+requires = ["maturin>=1.14.0,<2.0"]
 
 [dependency-groups]
 build = [
@@ -22,6 +22,13 @@ test = [
 [project]
 classifiers = [
   "Programming Language :: Rust",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
+  "Programming Language :: Python :: Free Threading :: 3 - Stable",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
   "Topic :: Software Development :: Libraries :: Python Modules"
