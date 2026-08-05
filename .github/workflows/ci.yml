@@ -29,13 +29,14 @@ jobs:
         - '3.12'
         - '3.13'
         - '3.14'
+        - '3.15'
         include:
         - os: windows-latest
-          python-version: '3.14'
+          python-version: '3.15'
         - os: macos-latest
-          python-version: '3.14'
+          python-version: '3.15'
         - os: ubuntu-24.04-arm
-          python-version: '3.14'
+          python-version: '3.15'
     name: Tests, Python ${{ matrix.python-version }}, ${{ matrix.os }}
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -46,6 +47,7 @@ jobs:
       id: setup_python
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
     - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0 # zizmor: ignore[cache-poisoning]
       # The cache is stored only on main branch and not used for publishing
       with:
@@ -95,6 +97,13 @@ jobs:
         args: --release --out dist -i python3.14t
         sccache: false
         manylinux: auto
+    - name: Build Python 3.15 free-threaded wheels
+      uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
+      with:
+        target: ${{ matrix.platform.target }}
+        args: --release --out dist -i python3.15t --features abi3t
+        sccache: false
+        manylinux: auto
     - name: Upload wheels
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
@@ -132,6 +141,13 @@ jobs:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python3.14t
 
+        sccache: false
+        manylinux: musllinux_1_2
+    - name: Build Python 3.15 free-threaded wheels
+      uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
+      with:
+        target: ${{ matrix.platform.target }}
+        args: --release --out dist -i python3.15t --features abi3t
         sccache: false
         manylinux: musllinux_1_2
     - name: Upload wheels
@@ -174,6 +190,17 @@ jobs:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python3.14t
         sccache: false
+    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      with:
+        python-version: 3.15t
+        allow-prereleases: true
+        architecture: ${{ matrix.platform.target }}
+    - name: Build Python 3.15 free-threaded wheels
+      uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
+      with:
+        target: ${{ matrix.platform.target }}
+        args: --release --out dist -i python3.15t --features abi3t
+        sccache: false
     - name: Upload wheels
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
@@ -209,6 +236,16 @@ jobs:
         target: ${{ matrix.platform.target }}
         args: --release --out dist -i python3.14t
 
+        sccache: false
+    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      with:
+        python-version: 3.15t
+        allow-prereleases: true
+    - name: Build Python 3.15 free-threaded wheels
+      uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
+      with:
+        target: ${{ matrix.platform.target }}
+        args: --release --out dist -i python3.15t --features abi3t
         sccache: false
     - name: Upload wheels
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
