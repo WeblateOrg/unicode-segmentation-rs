@@ -1,3 +1,8 @@
+<a href="https://weblate.org/"><img alt="Weblate" src="https://s.weblate.org/cdn/Logo-Darktext-borders.png" height="80px" /></a>
+
+**Weblate is libre software web-based continuous localization system,
+used by over 2500 libre projects and companies in more than 165 countries.**
+
 # unicode-segmentation-rs
 
 Python bindings for the Rust [unicode-segmentation](https://docs.rs/unicode-segmentation/), [unicode-linebreak](https://docs.rs/unicode-linebreak/), and [unicode-width](https://docs.rs/unicode-width/) crates, providing Unicode text segmentation and width calculation according to Unicode standards.
