@@ -57,14 +57,16 @@ mod unicode_segmentation_rs {
 
     /// Get Unicode line-break opportunities as UTF-8 byte offsets.
     #[pyfunction]
-    fn line_breaks(text: &str) -> PyResult<Vec<(usize, bool)>> {
+    fn line_breaks<'py>(py: Python<'py>, text: &str) -> PyResult<Bound<'py, PyList>> {
         if text.is_empty() {
-            return Ok(vec![]);
+            return Ok(PyList::empty(py));
         }
 
-        Ok(unicode_linebreaks(text)
-            .map(|(offset, opportunity)| (offset, opportunity == BreakOpportunity::Mandatory))
-            .collect())
+        PyList::new(
+            py,
+            unicode_linebreaks(text)
+                .map(|(offset, opportunity)| (offset, opportunity == BreakOpportunity::Mandatory)),
+        )
     }
 
     /// Split a string at every Unicode line-break opportunity.
@@ -100,16 +102,20 @@ mod unicode_segmentation_rs {
     /// - Handles CJK characters with proper width calculation
     /// - Breaks long words only when necessary
     #[pyfunction]
-    fn gettext_wrap(text: &str, width: usize) -> PyResult<Vec<String>> {
+    fn gettext_wrap<'py>(
+        py: Python<'py>,
+        text: &str,
+        width: usize,
+    ) -> PyResult<Bound<'py, PyList>> {
         if text.is_empty() || width == 0 {
             return if text.is_empty() {
-                Ok(vec![])
+                Ok(PyList::empty(py))
             } else {
-                Ok(vec![text.to_string()])
+                PyList::new(py, [text])
             };
         }
 
-        Ok(wrap_po_chunks(PoChunks::new(text), width))
+        PyList::new(py, wrap_po_chunks(PoChunks::new(text), width))
     }
 
     /// Iterator over borrowed chunks split using word boundaries and PO-specific rules.
@@ -210,34 +216,68 @@ mod unicode_segmentation_rs {
         }
     }
 
-    /// Wrap borrowed chunks into lines respecting the width limit.
-    fn wrap_po_chunks<'a>(chunks: impl IntoIterator<Item = &'a str>, width: usize) -> Vec<String> {
-        let mut lines = Vec::new();
-        let mut current_line = String::new();
-        let mut current_width = 0;
+    /// Iterator that wraps borrowed chunks into owned lines respecting the width limit.
+    struct WrappedLines<'a, I>
+    where
+        I: Iterator<Item = &'a str>,
+    {
+        chunks: I,
+        width: usize,
+        current_line: String,
+        current_width: usize,
+        emit_current: bool,
+    }
 
-        for chunk in chunks {
-            let chunk_width: usize = chunk.width();
+    impl<'a, I> Iterator for WrappedLines<'a, I>
+    where
+        I: Iterator<Item = &'a str>,
+    {
+        type Item = String;
 
-            if current_width + chunk_width > width && !current_line.is_empty() {
-                lines.push(std::mem::take(&mut current_line));
-                current_width = 0;
+        fn next(&mut self) -> Option<Self::Item> {
+            if self.emit_current {
+                self.emit_current = false;
+                self.current_width = 0;
+                return Some(std::mem::take(&mut self.current_line));
             }
-            current_line.push_str(chunk);
-            current_width += chunk_width;
 
-            // Force break on \n
-            if chunk.ends_with("\\n") {
-                lines.push(std::mem::take(&mut current_line));
-                current_width = 0;
+            for chunk in self.chunks.by_ref() {
+                let chunk_width = chunk.width();
+
+                if self.current_width + chunk_width > self.width && !self.current_line.is_empty() {
+                    let completed = std::mem::take(&mut self.current_line);
+                    self.current_line.push_str(chunk);
+                    self.current_width = chunk_width;
+                    self.emit_current = chunk.ends_with("\\n");
+                    return Some(completed);
+                }
+
+                self.current_line.push_str(chunk);
+                self.current_width += chunk_width;
+
+                // Force break on \n
+                if chunk.ends_with("\\n") {
+                    self.current_width = 0;
+                    return Some(std::mem::take(&mut self.current_line));
+                }
             }
-        }
 
-        if !current_line.is_empty() {
-            lines.push(current_line);
+            self.current_width = 0;
+            (!self.current_line.is_empty()).then(|| std::mem::take(&mut self.current_line))
         }
+    }
 
-        lines
+    fn wrap_po_chunks<'a, C>(chunks: C, width: usize) -> WrappedLines<'a, C::IntoIter>
+    where
+        C: IntoIterator<Item = &'a str>,
+    {
+        WrappedLines {
+            chunks: chunks.into_iter(),
+            width,
+            current_line: String::new(),
+            current_width: 0,
+            emit_current: false,
+        }
     }
 
     /// Check if a string contains only mergeable characters
@@ -299,5 +339,43 @@ mod unicode_segmentation_rs {
                 | '}'
                 | '~'
         )
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use std::cell::Cell;
+
+        use super::wrap_po_chunks;
+
+        #[test]
+        fn wrapped_lines_are_produced_incrementally() {
+            let consumed = Cell::new(0);
+            let chunks = ["first ", "second ", "third ", "fourth"]
+                .into_iter()
+                .inspect(|_| consumed.set(consumed.get() + 1));
+            let mut lines = wrap_po_chunks(chunks, 7);
+
+            assert_eq!(lines.next().as_deref(), Some("first "));
+            assert_eq!(consumed.get(), 2);
+            assert_eq!(lines.collect::<Vec<_>>(), ["second ", "third ", "fourth"]);
+            assert_eq!(consumed.get(), 4);
+        }
+
+        #[test]
+        fn wrapped_lines_preserve_edge_cases() {
+            assert_eq!(
+                wrap_po_chunks(["first ", "\\n", "last"], 6).collect::<Vec<_>>(),
+                ["first ", "\\n", "last"]
+            );
+            assert!(
+                wrap_po_chunks(std::iter::empty(), 10)
+                    .collect::<Vec<_>>()
+                    .is_empty()
+            );
+            assert_eq!(
+                wrap_po_chunks(["unwrapped"], 0).collect::<Vec<_>>(),
+                ["unwrapped"]
+            );
+        }
     }
 }
