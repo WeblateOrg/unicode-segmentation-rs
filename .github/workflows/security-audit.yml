@@ -1,0 +1,42 @@
+# Copyright © Michal Čihař <michal@weblate.org>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Security audit
+
+on:
+  pull_request:
+  push:
+    branches:
+    - main
+    paths:
+    - Cargo.lock
+    - Cargo.toml
+    - .github/workflows/security-audit.yml
+  schedule:
+  - cron: 37 4 * * 1
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # renovate: datasource=crate depName=cargo-audit
+  CARGO_AUDIT_VERSION: 0.22.2
+
+jobs:
+  rustsec:
+    name: RustSec audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+    - name: Install cargo-audit
+      uses: taiki-e/install-action@cb33e69fad06166ca28a42b2575e4dadabf62ee8 # v2.85.8
+      with:
+        fallback: none
+        tool: cargo-audit@${{ env.CARGO_AUDIT_VERSION }}
+    - name: Audit Rust dependencies
+      run: cargo audit --file Cargo.lock
