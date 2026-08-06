@@ -207,6 +207,9 @@ print(lines)
 
 ## API Reference
 
+Functions returning lists materialize the complete result. Applications processing very large or
+untrusted text should enforce an input-size limit appropriate for their environment.
+
 ### `graphemes(text: str, is_extended: bool) -> list[str]`
 
 Split a string into grapheme clusters. Set `is_extended=True` for extended grapheme clusters (recommended).
