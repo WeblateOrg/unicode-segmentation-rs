@@ -138,7 +138,7 @@ checksum = "c6f5d3c3b1bf09027a88a6bc961fc00497d651009560b5463668dc81b0fa87a8"
 
 [[package]]
 name = "unicode-segmentation-rs"
-version = "0.3.2"
+version = "0.3.3"
 dependencies = [
  "pyo3",
  "unicode-linebreak",
