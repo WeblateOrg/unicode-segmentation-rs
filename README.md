@@ -42,7 +42,9 @@ import unicode_segmentation_rs
 # Grapheme clusters (user-perceived characters)
 text = "Hello 👨‍👩‍👧‍👦 World"
 clusters = unicode_segmentation_rs.graphemes(text, is_extended=True)
-print(clusters)  # ['H', 'e', 'l', 'l', 'o', ' ', '👨‍👩‍👧‍👦', ' ', 'W', 'o', 'r', 'l', 'd']
+print(
+    clusters
+)  # ['H', 'e', 'l', 'l', 'o', ' ', '👨‍👩‍👧‍👦', ' ', 'W', 'o', 'r', 'l', 'd']
 
 # Get grapheme clusters with their byte indices
 indices = unicode_segmentation_rs.grapheme_indices(text, is_extended=True)
@@ -79,9 +81,9 @@ width = unicode_segmentation_rs.text_width(text)
 print(width)  # 10 (Hello=5, space=1, 世=2, 界=2, but depends on terminal)
 
 # Character width
-print(unicode_segmentation_rs.text_width('A'))    # 1
-print(unicode_segmentation_rs.text_width('世'))   # 2
-print(unicode_segmentation_rs.text_width('\t'))   # 1
+print(unicode_segmentation_rs.text_width("A"))  # 1
+print(unicode_segmentation_rs.text_width("世"))  # 2
+print(unicode_segmentation_rs.text_width("\t"))  # 1
 ```
 
 ## Examples
@@ -95,7 +97,9 @@ import unicode_segmentation_rs
 text = "Hello 👨‍👩‍👧‍👦 नमस्ते"
 print(f"Text: {text}")
 print(f"Graphemes: {unicode_segmentation_rs.graphemes(text, is_extended=True)}")
-print(f"Length (graphemes): {len(unicode_segmentation_rs.graphemes(text, is_extended=True))}")
+print(
+    f"Length (graphemes): {len(unicode_segmentation_rs.graphemes(text, is_extended=True))}"
+)
 print(f"Length (chars): {len(text)}")
 
 # With indices
@@ -182,7 +186,7 @@ for text in examples:
     print(f"Text: {text!r:20} Width: {width:2} Chars: {len(text):2}")
 
 # Character widths
-chars = ['a', 'A', '1', ' ', '世', '界', 'あ', '🎉', '\t', '\n']
+chars = ["a", "A", "1", " ", "世", "界", "あ", "🎉", "\t", "\n"]
 for c in chars:
     w = unicode_segmentation_rs.text_width(c)
     print(f"  {c!r:6} width: {w:2}")
@@ -198,7 +202,9 @@ for i, line in enumerate(lines, 1):
     print(f"Line {i}: {line}")
 
 # Wrapping with CJK characters
-text = "This translation contains 中文字符 (Chinese characters) and should wrap correctly"
+text = (
+    "This translation contains 中文字符 (Chinese characters) and should wrap correctly"
+)
 lines = unicode_segmentation_rs.gettext_wrap(text, 40)
 for line in lines:
     width = unicode_segmentation_rs.text_width(line)
