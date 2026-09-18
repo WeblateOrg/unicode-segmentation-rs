@@ -254,7 +254,7 @@ jobs:
         path: dist
 
   sdist:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     name: Package sdist
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -299,7 +299,7 @@ jobs:
 
   release:
     name: Release
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
     needs: all-tests
     permissions:
@@ -326,7 +326,7 @@ jobs:
         args: --non-interactive --skip-existing wheels-*/*
 
   release_github:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     name: Create release on GitHub
     permissions:
       contents: write
