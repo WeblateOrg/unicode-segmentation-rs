@@ -7,9 +7,9 @@ build = [
   "maturin==1.15.0"
 ]
 dev = [
-  {include-group = "build"},
-  {include-group = "test"},
-  {include-group = "pre-commit"}
+  { include-group = "build" },
+  { include-group = "test" },
+  { include-group = "pre-commit" }
 ]
 pre-commit = [
   "prek==0.5.3"
