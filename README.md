@@ -10,7 +10,7 @@ Python bindings for the Rust [unicode-segmentation](https://docs.rs/unicode-segm
   </a>
 </p>
 
-> Maintained by [Weblate](https://weblate.org/) — a privacy-respecting localization platform built on open-source foundations.
+Maintained by [Weblate](https://weblate.org/) — a privacy-respecting localization platform built on open-source foundations.
 
 ## Features
 
