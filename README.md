@@ -4,7 +4,7 @@ Python bindings for the Rust [unicode-segmentation](https://docs.rs/unicode-segm
 
 <p align="center">
   <a href="https://weblate.org/">
-    img alt="Weblate" src="https://s.weblate.org/cdn/Logo-Darktext-borders.png" height="80px" />
+    <img alt="Weblate" src="https://s.weblate.org/cdn/Logo-Darktext-borders.png" height="80px" />
   </a>
 </p>
 
