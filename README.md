@@ -2,10 +2,16 @@
 
 Python bindings for the Rust [unicode-segmentation](https://docs.rs/unicode-segmentation/), [unicode-linebreak](https://docs.rs/unicode-linebreak/), and [unicode-width](https://docs.rs/unicode-width/) crates, providing Unicode text segmentation and width calculation according to Unicode standards.
 
+<p align="center">
+  <a href="https://weblate.org/">
+    img alt="Weblate" src="https://s.weblate.org/cdn/Logo-Darktext-borders.png" height="80px" />
+  </a>
+</p>
+
 > **Maintained by [Weblate](https://weblate.org/)**
 >
-> Open-source localization software, maintained together with the
-> open-source ecosystem it depends on.
+> This project is maintained by the Weblate team as part of our investment
+> in the open-source ecosystem.
 
 ## Features
 
