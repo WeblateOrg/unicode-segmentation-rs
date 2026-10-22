@@ -21,6 +21,7 @@ test = [
 
 [project]
 classifiers = [
+  "Development Status :: 5 - Production/Stable",
   "Programming Language :: Rust",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
