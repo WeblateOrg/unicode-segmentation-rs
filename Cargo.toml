@@ -2,7 +2,7 @@
 pyo3 = { version = "0.30.1", features = ["extension-module", "abi3-py310"] }
 unicode-linebreak = "0.1.5"
 unicode-segmentation = "1.13.3"
-unicode-width = "0.2.2"
+unicode-width = "0.2.3"
 
 [features]
 abi3t = ["pyo3/abi3t-py315"]
