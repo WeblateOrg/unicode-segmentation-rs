@@ -11,6 +11,9 @@ dev = [
   { include-group = "test" },
   { include-group = "pre-commit" }
 ]
+package-lint = [
+  "twine==7.0.0"
+]
 pre-commit = [
   "prek==0.5.10"
 ]
